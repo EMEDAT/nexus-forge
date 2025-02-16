@@ -1,12 +1,21 @@
 // src/app/(dashboard)/layout.tsx
 import { Header } from "@/components/dashboard/header"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user) {
+    redirect('/login')
+  }
+
   return (
     <div className="h-screen flex dark:bg-gray-900">
       <Sidebar />

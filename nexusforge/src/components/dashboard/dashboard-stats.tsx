@@ -1,4 +1,7 @@
 // src/components/dashboard/dashboard-stats.tsx
+
+'use client'
+
 import { 
     Users, 
     FolderKanban, 

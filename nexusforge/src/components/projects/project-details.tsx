@@ -59,7 +59,7 @@ export function ProjectDetails({ project }: { project: Project }) {
           <div>
             <p className="text-sm font-medium text-gray-500">Timeline</p>
             <p className="mt-1">
-              {new Date(project.timeline).toLocaleDateString()}
+              {project.timeline ? new Date(project.timeline).toLocaleDateString() : 'Not set'}
             </p>
           </div>
           

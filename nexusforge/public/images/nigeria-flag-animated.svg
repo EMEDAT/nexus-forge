@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <defs>
+    <path id="wave" d="M0,40 Q75,30 150,40 T300,40 T450,40" />
+    
+    <!-- Wave Animation -->
+    <animateTransform
+      xlink:href="#wave"
+      attributeName="transform"
+      attributeType="XML"
+      type="translate"
+      from="-300 0"
+      to="0 0"
+      dur="2s"
+      repeatCount="indefinite"
+    />
+    
+    <!-- Define the wave pattern -->
+    <pattern id="stripes" patternUnits="userSpaceOnUse" width="300" height="600">
+      <path fill="#fff" d="M0,0 h100 v600 h-100 z">
+        <animate attributeName="d" 
+          values="M0,0 h100 v600 h-100 z;
+                 M0,20 h100 v600 h-100 z;
+                 M0,0 h100 v600 h-100 z"
+          dur="3s"
+          repeatCount="indefinite" />
+      </path>
+      <path fill="#008751" d="M100,0 h100 v600 h-100 z">
+        <animate attributeName="d" 
+          values="M100,0 h100 v600 h-100 z;
+                 M100,30 h100 v600 h-100 z;
+                 M100,0 h100 v600 h-100 z"
+          dur="3s"
+          repeatCount="indefinite" />
+      </path>
+      <path fill="#fff" d="M200,0 h100 v600 h-100 z">
+        <animate attributeName="d" 
+          values="M200,0 h100 v600 h-100 z;
+                 M200,20 h100 v600 h-100 z;
+                 M200,0 h100 v600 h-100 z"
+          dur="3s"
+          repeatCount="indefinite" />
+      </path>
+    </pattern>
+  </defs>
+  
+  <!-- Background with wave pattern -->
+  <rect width="900" height="600" fill="url(#stripes)">
+    <animate attributeName="y"
+      values="0;10;0"
+      dur="3s"
+      repeatCount="indefinite" />
+  </rect>
+  
+  <!-- Add subtle wave overlay -->
+  <g opacity="0.1">
+    <use href="#wave" stroke="#000" fill="none" transform="translate(0,100)" />
+    <use href="#wave" stroke="#000" fill="none" transform="translate(-150,200)" />
+    <use href="#wave" stroke="#000" fill="none" transform="translate(-75,300)" />
+  </g>
+</svg>

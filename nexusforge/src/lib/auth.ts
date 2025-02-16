@@ -4,11 +4,12 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
-import { UserRole } from "@/types"
+import { UserRole, Country } from "@/types"
 
 declare module "next-auth" {
   interface User {
     role: UserRole
+    country: Country  
   }
   
   interface Session {
@@ -18,6 +19,7 @@ declare module "next-auth" {
       email?: string | null
       image?: string | null
       role: UserRole
+      country: Country  
     }
   }
 }
@@ -26,9 +28,7 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
     CredentialsProvider({
@@ -38,52 +38,92 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials")
-        }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+        console.log('AUTHORIZE CALLED WITH:', credentials?.email)
+        
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.error('Missing email or password')
+            return null
           }
-        })
 
-        if (!user || !user?.password) {
-          throw new Error("Invalid credentials")
-        }
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              role: true,
+              country: true,
+            }
+          })
 
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
+          console.log('USER FOUND:', user ? 'Yes' : 'No')
 
-        if (!isCorrectPassword) {
-          throw new Error("Invalid credentials")
-        }
+          if (!user) {
+            console.error('No user found with this email')
+            return null
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role as UserRole,
+          const isValidPassword = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
+
+          console.log('PASSWORD MATCH:', isValidPassword)
+
+          if (!isValidPassword) {
+            console.error('Incorrect password')
+            return null
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role as UserRole,
+            country: user.country as Country,
+          }
+        } catch (error) {
+          console.error("FULL AUTHORIZE ERROR:", error)
+          return null
         }
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role
+    async jwt({ token, user, trigger, session }) {
+      console.log('JWT Callback - Token:', token)
+      console.log('JWT Callback - User:', user)
+      
+      if (trigger === "signIn" && user) {
         token.id = user.id
+        token.email = user.email
+        token.name = user.name
+        token.role = user.role
+        token.country = user.country
       }
+
       return token
     },
     async session({ session, token }) {
+      console.log('Session Callback - Token:', token)
+      
       if (session.user) {
-        session.user.role = token.role as UserRole
         session.user.id = token.id as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
+        session.user.role = token.role as UserRole
+        session.user.country = token.country as Country
       }
+
+      console.log('Session Callback - Final Session:', session)
       return session
     }
-  }
+  },
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
+  debug: process.env.NODE_ENV === 'development',
 }

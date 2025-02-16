@@ -33,27 +33,31 @@ export function LoginForm() {
     try {
       setIsLoading(true)
       setError('')
-
+  
       const result = await signIn('credentials', {
-        email: data.email,
+        email: data.email.toLowerCase(),
         password: data.password,
         redirect: false,
       })
-
+  
       if (result?.error) {
         setError('Invalid email or password')
         return
       }
-
-      router.push('/dashboard')
-      router.refresh()
+  
+      if (result?.ok) {
+        router.push('/dashboard')
+        router.refresh()
+      }
     } catch (error) {
+      console.error('Login error:', error)
       setError('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>

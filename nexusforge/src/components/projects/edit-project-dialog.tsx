@@ -43,7 +43,7 @@ export function EditProjectDialog({
     defaultValues: {
       title: project.title,
       description: project.description,
-      timeline: new Date(project.timeline).toISOString().split('T')[0],
+      timeline: project.timeline ? new Date(project.timeline).toISOString().split('T')[0] : '',
       budget: project.budget?.toString() || '',
       status: project.status,
     },

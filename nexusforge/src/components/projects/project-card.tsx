@@ -21,6 +21,10 @@ interface ProjectCardProps {
   }
 }
 
+const formatProjectDate = (date: Date | null) => {
+  return date ? new Date(date).toLocaleDateString() : 'No date set'
+}
+
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link 
@@ -52,10 +56,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            {new Date(project.timeline).toLocaleDateString()}
-          </div>
+        <div className="flex items-center">
+          <Calendar className="h-4 w-4 mr-1" />
+          {formatProjectDate(project.timeline)}
+        </div>
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />
             Updated {formatDistanceToNow(new Date(project.updatedAt), { addSuffix: true })}

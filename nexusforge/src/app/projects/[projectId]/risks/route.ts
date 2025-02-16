@@ -16,6 +16,13 @@ export async function GET(
 
     const risks = await prisma.risk.findMany({
       where: { projectId: params.projectId },
+      include: {
+        createdBy: true,
+        assignedTo: true,
+        project: true,
+        alerts: true,
+        history: true
+      },
       orderBy: { createdAt: 'desc' },
     })
 
@@ -47,6 +54,10 @@ export async function POST(
         status: 'ACTIVE',
         createdById: session.user.id,
       },
+      include: {
+        createdBy: true,
+        project: true
+      }
     })
 
     return NextResponse.json(risk)

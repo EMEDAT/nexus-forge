@@ -29,9 +29,9 @@ export function ProjectTeam({ project }: ProjectTeamProps) {
               className="flex items-center space-x-4"
             >
               <div className="relative h-10 w-10">
-                {member.user.image ? (
+                {member.user.profileImage || member.user.image ? (
                   <Image
-                    src={member.user.image}
+                    src={member.user.profileImage || member.user.image || '/default-profile.png'}
                     alt={member.user.name}
                     fill
                     className="rounded-full"

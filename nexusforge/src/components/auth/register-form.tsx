@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
+import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 
 const roles = [
@@ -39,32 +40,66 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      country: '',
+      role: undefined,
+    }
   })
 
   const selectedRole = watch('role')
 
-  const onSubmit = async (data: RegisterForm) => {
-    try {
-      setIsLoading(true)
-      setError('')
+// In your RegisterForm component, update the onSubmit function:
+const onSubmit = async (data: RegisterForm) => {
+  try {
+    setIsLoading(true)
+    setError('')
 
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
+    // Register the user
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...data,
+        name: data.name.trim(),
+        email: data.email.toLowerCase(),
+      }),
+    })
 
-      if (!response.ok) {
-        throw new Error('Registration failed')
-      }
+    const result = await response.json()
 
-      router.push('/login?registered=true')
-    } catch (error) {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setIsLoading(false)
+    if (!response.ok) {
+      throw new Error(result.error || 'Registration failed')
     }
+
+    // Automatically sign in after successful registration
+    const signInResult = await signIn('credentials', {
+      email: data.email.toLowerCase(),
+      password: data.password,
+      redirect: false,
+    })
+
+    if (signInResult?.error) {
+      throw new Error(signInResult.error)
+    }
+
+    // Redirect based on user's country
+    if (data.country === 'NG') {
+      router.push('/dashboard?country=NG')
+    } else {
+      router.push('/dashboard')
+    }
+    
+  } catch (error: any) {
+    console.error('Registration/Login error:', error)
+    setError(error.message || 'Something went wrong. Please try again.')
+  } finally {
+    setIsLoading(false)
   }
+}
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

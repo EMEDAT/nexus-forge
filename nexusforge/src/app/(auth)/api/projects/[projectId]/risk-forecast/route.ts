@@ -1,8 +1,9 @@
-// src/app/api/projects/[projectId]/risk-forecast/route.ts
+// src/app/(auth)/api/projects/[projectId]/risk-forecast/route.ts
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
+import type { Risk } from '@/types'
 
 export async function GET(
   req: Request,
@@ -27,13 +28,15 @@ export async function GET(
         }
       },
       include: {
-        category: true,
+        createdBy: true,
+        assignedTo: true,
+        alerts: true,
+        history: true,
       },
     })
 
-    // Calculate predictions and forecasts
-    // Note: In a real application, you would use more sophisticated
-    // prediction models and algorithms
+    // Type assertion for historical risks
+    const typedRisks = historicalRisks as unknown as Risk[]
 
     const forecast = {
       predictedRiskLevel: 'Medium',
@@ -42,8 +45,8 @@ export async function GET(
       peakRiskPeriod: 'August 2024',
       
       trendForecast: generateTrendForecast(timeframe),
-      categoryForecast: generateCategoryForecast(historicalRisks),
-      recommendations: generateRecommendations(historicalRisks),
+      categoryForecast: generateCategoryForecast(typedRisks),
+      recommendations: generateRecommendations(typedRisks),
     }
 
     return NextResponse.json(forecast)
@@ -55,6 +58,7 @@ export async function GET(
     )
   }
 }
+
 
 function generateTrendForecast(timeframe: string) {
   // Generate mock forecast data

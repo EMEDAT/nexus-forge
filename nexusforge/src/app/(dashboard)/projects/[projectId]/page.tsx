@@ -7,6 +7,7 @@ import { ProjectDetails } from '@/components/projects/project-details'
 import { ProjectDocuments } from '@/components/projects/project-documents'
 import { ProjectTeam } from '@/components/projects/project-team'
 import { ProjectTimeline } from '@/components/projects/project-timeline'
+import type { Project } from '@/types'
 
 type ProjectPageParams = {
   projectId: string
@@ -32,6 +33,18 @@ export default async function ProjectPage({ params }: { params: ProjectPageParam
       tasks: {
         orderBy: { createdAt: 'desc' },
       },
+      risks: {
+        include: {
+          createdBy: true,
+          assignedTo: true,
+        },
+      },
+      riskAlerts: {
+        include: {
+          risk: true,
+          user: true,
+        },
+      },
     },
   })
 
@@ -39,18 +52,25 @@ export default async function ProjectPage({ params }: { params: ProjectPageParam
     notFound()
   }
 
+  // Convert Prisma model to our Project type
+  const typedProject = {
+    ...project,
+    risks: project.risks || [],
+    riskAlerts: project.riskAlerts || [],
+  } as Project
+
   return (
     <div className="space-y-6">
-      <ProjectDetails project={project} />
+      <ProjectDetails project={typedProject} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <ProjectDocuments project={project} />
-          <ProjectTimeline project={project} />
+          <ProjectDocuments project={typedProject} />
+          <ProjectTimeline project={typedProject} />
         </div>
         
         <div className="space-y-6">
-          <ProjectTeam project={project} />
+          <ProjectTeam project={typedProject} />
         </div>
       </div>
     </div>

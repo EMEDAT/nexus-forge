@@ -13,13 +13,15 @@ interface CreateTaskDialogProps {
   onCloseAction: () => void
 }
 
+type CreateTaskInput = Pick<Task, 'title' | 'description' | 'status' | 'dueDate' | 'assignedToId' | 'createdAt' | 'completed'>
+
 export function CreateTaskDialog({ 
   projectId, 
   open, 
   onCloseAction 
 }: CreateTaskDialogProps) {
   const router = useRouter()
-  const [newTask, setNewTask] = useState<Omit<Task, 'id' | 'projectId'>>({
+  const [newTask, setNewTask] = useState<CreateTaskInput>({
     title: '',
     description: '',
     status: 'PENDING',

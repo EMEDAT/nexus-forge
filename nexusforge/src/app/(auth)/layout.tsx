@@ -25,7 +25,7 @@ export default function AuthLayout({
       <div className="hidden md:block md:w-1/2 relative">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
         <Image
-          src="/images/auth-bg.jpg"
+          src="/images/CreateAccountBackground.webp"
           alt="Architecture Background"
           fill
           className="object-cover"
