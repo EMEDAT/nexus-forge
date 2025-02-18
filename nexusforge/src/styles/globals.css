@@ -1,3 +1,5 @@
+/* src\styles\globals.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,5 +98,59 @@
 
   .architectural-text {
     @apply text-neutral-600 dark:text-neutral-400;
+  }
+}
+
+
+
+/* Country-specific theming - add to end of globals.css */
+:root {
+  /* Default country theme variables (Nigeria) */
+  --country-primary: #008751;
+  --country-secondary: #ffffff;
+  --country-accent: #0a3d62;
+  --country-background: var(--background);
+}
+
+/* Country-specific component classes */
+.country-card {
+  @apply rounded-lg border shadow-sm;
+  background-color: var(--country-background);
+  border-color: var(--country-primary);
+}
+
+.country-button {
+  @apply px-4 py-2 rounded-md text-white transition-colors;
+  background-color: var(--country-primary);
+}
+
+.country-button:hover {
+  background-color: var(--country-accent);
+}
+
+.country-header {
+  background: linear-gradient(to right, var(--country-primary), var(--country-accent));
+  @apply text-white p-6 rounded-lg;
+}
+
+.country-accent-text {
+  color: var(--country-accent);
+}
+
+.country-primary-text {
+  color: var(--country-primary);
+}
+
+/* Country-specific animations */
+.country-flag-animated {
+  animation: flag-wave 6s ease-in-out infinite;
+}
+
+@keyframes flag-wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }

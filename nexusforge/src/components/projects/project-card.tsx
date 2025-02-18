@@ -1,5 +1,8 @@
 // src/components/projects/project-card.tsx
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { 
   Calendar, 
@@ -8,6 +11,7 @@ import {
   Clock
 } from 'lucide-react'
 import { Project } from '@/types'
+import { DeleteProjectDialog } from './delete-project-dialog'
 
 const STATUS_COLORS = {
   DRAFT: 'bg-gray-100 text-gray-800',
@@ -26,20 +30,27 @@ const formatProjectDate = (date: Date | null) => {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
   return (
-    <Link 
-      href={`/projects/${project.id}`}
-      className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
       <div className="p-6">
         <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-lg font-medium">{project.title}</h3>
-            <p className="mt-1 text-sm text-gray-500 line-clamp-2">
-              {project.description}
-            </p>
-          </div>
-          <button className="text-gray-400 hover:text-gray-500">
+          <Link href={`/projects/${project.id}`}>
+            <div>
+              <h3 className="text-lg font-medium">{project.title}</h3>
+              <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                {project.description}
+              </p>
+            </div>
+          </Link>
+          <button 
+            onClick={(e) => {
+              e.preventDefault()
+              setShowDeleteDialog(true)
+            }}
+            className="text-gray-400 hover:text-gray-500"
+          >
             <MoreVertical className="h-5 w-5" />
           </button>
         </div>
@@ -56,16 +67,27 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 mr-1" />
-          {formatProjectDate(project.timeline)}
-        </div>
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formatProjectDate(project.timeline)}
+          </div>
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />
             Updated {formatDistanceToNow(new Date(project.updatedAt), { addSuffix: true })}
           </div>
         </div>
       </div>
-    </Link>
+
+      <DeleteProjectDialog 
+        project={project}
+        open={showDeleteDialog}
+        onCloseAction={() => setShowDeleteDialog(false)}
+        onDeleteAction={() => {
+          setShowDeleteDialog(false)
+          // You might want to trigger a refresh here
+          window.location.reload()
+        }}
+      />
+    </div>
   )
 }

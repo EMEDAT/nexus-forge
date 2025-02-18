@@ -7,6 +7,7 @@ export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
 export type MentorshipStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
 export type RiskStatus = 'ACTIVE' | 'MITIGATED' | 'RESOLVED'
 export type DocumentType = 'PDF' | 'DOC' | 'XLSX' | 'IMAGE' | 'OTHER'
+export type Gender = 'MALE' | 'FEMALE'
 
 export interface User {
   id: string
@@ -15,6 +16,7 @@ export interface User {
   password: string
   image?: string | null; 
   role: UserRole
+  gender?: Gender
   country: Country
   profileImage: string | null
   bio: string | null

@@ -1,13 +1,14 @@
 // src/components/dashboard/recent-activity.tsx
 import { prisma } from '@/lib/prisma'
 import { formatDistanceToNow } from 'date-fns'
+import { Project } from '@/types'
 
 interface RecentActivityProps {
   userId: string
 }
 
 export async function RecentActivity({ userId }: RecentActivityProps) {
-  const recentProjects = await prisma.project.findMany({
+  const recentProjects: Project[] = await prisma.project.findMany({
     where: { userId },
     orderBy: { createdAt: 'desc' },
     take: 5,
@@ -19,7 +20,7 @@ export async function RecentActivity({ userId }: RecentActivityProps) {
         <h2 className="font-semibold mb-4">Recent Activity</h2>
         <div className="space-y-4">
           {recentProjects.length > 0 ? (
-            recentProjects.map((project) => (
+            recentProjects.map((project: Project) => (
               <div
                 key={project.id}
                 className="flex items-start space-x-3"

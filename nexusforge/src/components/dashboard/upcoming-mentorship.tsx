@@ -1,13 +1,13 @@
 // src/components/dashboard/upcoming-mentorship.tsx
 import { prisma } from '@/lib/prisma'
-import { User } from '@/types'
+import { Mentorship } from '@/types'
 
 interface UpcomingMentorshipProps {
   userId: string
 }
 
 export async function UpcomingMentorship({ userId }: UpcomingMentorshipProps) {
-  const mentorships = await prisma.mentorship.findMany({
+  const mentorships: Mentorship[] = await prisma.mentorship.findMany({
     where: { 
       AND: [
         { mentorId: userId },
@@ -29,7 +29,7 @@ export async function UpcomingMentorship({ userId }: UpcomingMentorshipProps) {
         <h2 className="font-semibold mb-4">Upcoming Mentorship Sessions</h2>
         {mentorships.length > 0 ? (
           <div className="space-y-4">
-            {mentorships.map((mentorship) => (
+            {mentorships.map((mentorship: Mentorship) => (
               <div
                 key={mentorship.id}
                 className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"

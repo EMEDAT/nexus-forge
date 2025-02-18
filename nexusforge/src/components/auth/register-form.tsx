@@ -22,6 +22,9 @@ const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.enum(['STUDENT', 'PROFESSIONAL', 'VETERAN', 'CLIENT']),
+  gender: z.enum(['MALE', 'FEMALE'], {
+    required_error: 'Please select your gender'
+  }),
   country: z.string().min(1, 'Please select your country'),
 })
 
@@ -126,7 +129,7 @@ const onSubmit = async (data: RegisterForm) => {
                 alt={role.title}
                 width={40}
                 height={40}
-                className="mx-auto mb-2"
+                className="mx-auto mb-2 object-contain dark:invert"
               />
               <span className="block text-sm font-medium">{role.title}</span>
             </button>
@@ -149,6 +152,36 @@ const onSubmit = async (data: RegisterForm) => {
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+        )}
+      </div>
+
+      {/* Gender Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Gender
+        </label>
+        <div className="mt-1 flex space-x-4">
+          <label className="inline-flex items-center">
+            <input
+              {...register('gender')}
+              type="radio"
+              value="MALE"
+              className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+            />
+            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Male</span>
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              {...register('gender')}
+              type="radio"
+              value="FEMALE"
+              className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+            />
+            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Female</span>
+          </label>
+        </div>
+        {errors.gender && (
+          <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
         )}
       </div>
 

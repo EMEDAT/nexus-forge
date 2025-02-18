@@ -1,15 +1,17 @@
 // src/lib/auth.ts
 import { NextAuthOptions } from "next-auth"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 import { UserRole, Country } from "@/types"
+import { Adapter } from "next-auth/adapters"
 
 declare module "next-auth" {
   interface User {
     role: UserRole
     country: Country  
+    gender: string 
   }
   
   interface Session {
@@ -20,12 +22,14 @@ declare module "next-auth" {
       image?: string | null
       role: UserRole
       country: Country  
+      gender: string 
     }
   }
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // Cast the adapter to satisfy TypeScript
+  adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -55,6 +59,7 @@ export const authOptions: NextAuthOptions = {
               password: true,
               role: true,
               country: true,
+              gender: true, 
             }
           })
 
@@ -83,6 +88,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role as UserRole,
             country: user.country as Country,
+            gender: user.gender,
           }
         } catch (error) {
           console.error("FULL AUTHORIZE ERROR:", error)
@@ -93,31 +99,25 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      console.log('JWT Callback - Token:', token)
-      console.log('JWT Callback - User:', user)
-      
       if (trigger === "signIn" && user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
         token.role = user.role
         token.country = user.country
+        token.gender = user.gender  // Add this line
       }
-
       return token
     },
     async session({ session, token }) {
-      console.log('Session Callback - Token:', token)
-      
       if (session.user) {
         session.user.id = token.id as string
         session.user.email = token.email as string
         session.user.name = token.name as string
         session.user.role = token.role as UserRole
         session.user.country = token.country as Country
+        session.user.gender = token.gender as string  // Add this line
       }
-
-      console.log('Session Callback - Final Session:', session)
       return session
     }
   },

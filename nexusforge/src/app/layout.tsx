@@ -1,5 +1,4 @@
-// src\app\layout.tsx
-
+// src/app/layout.tsx
 import { Inter } from "next/font/google"
 import { Providers } from "@/components/providers"
 import "@/styles/globals.css"

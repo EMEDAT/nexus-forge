@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { ProjectList } from '@/components/projects/project-list'
-import { ProjectHeader } from '@/components/projects/project-header'
+import { ProjectHeader } from '@/components/projects/projects-header'
 import type { Project } from '@/types'
 
 export default async function ProjectsPage() {

@@ -116,14 +116,14 @@ export default function Home() {
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-4">
-              {userTypes.map((type) => (
+            {userTypes.map((type) => (
                 <div key={type.title} className="flex flex-col items-center text-center">
                   <div className="mb-6 relative w-16 h-16">
                     <Image
                       src={type.icon}
                       alt={type.title}
                       fill
-                      className="object-contain"
+                      className="object-contain dark:invert" // Added dark:invert here
                       sizes="64px"
                     />
                   </div>

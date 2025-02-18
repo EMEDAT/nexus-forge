@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     console.log('Received registration data:', JSON.stringify(body, null, 2))
 
     // Validate that all required fields are present and non-empty
-    const requiredFields = ['name', 'email', 'password', 'role', 'country']
+    const requiredFields = ['name', 'email', 'password', 'role', 'country', 'gender']
     for (const field of requiredFields) {
       if (!body[field] || typeof body[field] !== 'string' || body[field].trim() === '') {
         console.error(`Invalid or missing field: ${field}`)
@@ -39,7 +39,8 @@ export async function POST(req: Request) {
       email: body.email.toLowerCase().trim(),
       password: body.password,
       role: body.role,
-      country: body.country
+      country: body.country,
+      gender: body.gender // Include gender in sanitized data
     }
 
     console.log('Sanitized registration data:', JSON.stringify(sanitizedData, null, 2))
@@ -88,6 +89,7 @@ export async function POST(req: Request) {
           password: hashedPassword,
           role: sanitizedData.role,
           country: sanitizedData.country,
+          gender: sanitizedData.gender, // Add gender field
           expertise: [],
           experience: null,
         },
@@ -96,29 +98,33 @@ export async function POST(req: Request) {
           name: true,
           email: true,
           role: true,
+          gender: true, // Also include gender in the response
           country: true,
           createdAt: true,
         }
       })
       
       console.log('User created successfully:', JSON.stringify(newUser, null, 2))
-    } catch (createError) {
-      console.error('User creation error:', createError)
+    } catch (error) {
+      console.error('User creation error:', error)
       
-      // More specific error handling
-      if (createError instanceof Prisma.PrismaClientKnownRequestError) {
+      // Modified type checking
+      if (
+        error instanceof Error && 
+        'code' in error
+      ) {
         return NextResponse.json(
           { 
             error: 'User creation failed', 
-            code: createError.code,
-            meta: createError.meta 
+            code: (error as any).code,
+            message: error.message
           },
           { status: 500 }
         )
       }
-
+  
       return NextResponse.json(
-        { error: 'Failed to create user', details: String(createError) },
+        { error: 'Failed to create user', details: String(error) },
         { status: 500 }
       )
     }

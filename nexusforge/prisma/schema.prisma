@@ -15,6 +15,7 @@ model User {
   email         String       @unique
   password      String
   role          String      // STUDENT, PROFESSIONAL, VETERAN, CLIENT
+  gender        String     // 'MALE' or 'FEMALE'
   country       String
   profileImage  String?
   bio           String?   
@@ -40,23 +41,28 @@ model User {
 }
 
 model Project {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String    
-  status      String      // DRAFT, IN_PROGRESS, COMPLETED
-  budget      Float?
-  timeline    DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String    
+  status        String      // DRAFT, IN_PROGRESS, COMPLETED
+  budget        Float?
+  timeline      DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Nigeria-specific fields
+  state         String?     // Nigerian state
+  lga           String?     // Local Government Area
+  buildingType  String?     // RESIDENTIAL, COMMERCIAL, INSTITUTIONAL
+  landUseZone   String?     // RESIDENTIAL, COMMERCIAL, INDUSTRIAL, MIXED_USE
+  regulatoryApprovals String[] // Array of required approvals
   
   // Relations
-  userId      String      @db.ObjectId
-  user        User        @relation(fields: [userId], references: [id])
-  documents   Document[]
-  team        TeamMember[]
-  tasks       Task[]
-
-  // Risk-related relations
+  userId        String      @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id])
+  documents     Document[]
+  team          TeamMember[]
+  tasks         Task[]
   risks         Risk[]
   riskAlerts    RiskAlert[]
 }

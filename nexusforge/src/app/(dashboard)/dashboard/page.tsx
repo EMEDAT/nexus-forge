@@ -9,7 +9,7 @@ import { RecentActivity } from '@/components/dashboard/recent-activity'
 import { UpcomingMentorship } from '@/components/dashboard/upcoming-mentorship'
 import { NigeriaInsights } from '@/components/dashboard/nigeria-insights'
 import Image from 'next/image'
-import type { User } from '@prisma/client'
+import { User } from '@/types'
 
 interface ExtendedUser extends User {
   _count: {
