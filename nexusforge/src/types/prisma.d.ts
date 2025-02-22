@@ -4,22 +4,39 @@ import {
   Prisma, 
   Risk as PrismaRisk, 
   RiskAlert as PrismaRiskAlert, 
-  RiskHistory as PrismaRiskHistory 
+  RiskHistory as PrismaRiskHistory,
+  Mentorship as PrismaMentorship,
+  MentorshipRequest as PrismaMentorshipRequest,
+  User as PrismaUser
 } from '@prisma/client'
 
-// Add this type declaration
+// Extend Error interface for Prisma errors
 declare module '@prisma/client' {
   interface PrismaClientKnownRequestError extends Error {
     code: string
     meta?: Record<string, unknown>
   }
-}
 
-declare global {
-  // Extend PrismaClient with additional methods if needed
-  interface PrismaClient {
-    risk: Prisma.RiskDelegate<GlobalRejectSettings>
-    riskAlert: Prisma.RiskAlertDelegate<GlobalRejectSettings>
-    riskHistory: Prisma.RiskHistoryDelegate<GlobalRejectSettings>
+  // Augment existing interfaces to include additional properties
+  interface User {
+    mentorshipAvailable?: string
+    mentorshipPreferences?: Prisma.JsonValue
+    state?: string
+  }
+
+  // Extend select types to include additional fields
+  interface Prisma {
+    UserSelect: {
+      mentorshipAvailable?: boolean
+      mentorshipPreferences?: boolean
+      state?: boolean
+    }
+
+    MentorshipSelect: {
+      startDate?: boolean
+    }
   }
 }
+
+// Optional: Add more specific type extensions here
+export {}

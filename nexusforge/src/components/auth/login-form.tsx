@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
+import { getCurrentUser } from '@/lib/session'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -41,22 +42,31 @@ export function LoginForm() {
       })
   
       if (result?.error) {
+        console.error('SignIn Error:', result.error)
         setError('Invalid email or password')
         return
       }
   
       if (result?.ok) {
-        router.push('/dashboard')
-        router.refresh()
+        const user = await getCurrentUser()
+        console.log('Current User:', user)
+  
+        if (user) {
+          // Remove (roles) from the path
+          const dashboardPath = `/${user.role.toLowerCase()}/dashboard`
+          router.push(dashboardPath)
+          router.refresh()
+        } else {
+          setError('Failed to retrieve user information')
+        }
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('Login Error:', error)
       setError('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
-
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

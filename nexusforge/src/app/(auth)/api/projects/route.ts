@@ -25,8 +25,9 @@ export async function POST(req: Request) {
         budget: budget ? parseFloat(budget) : null,
         status: 'DRAFT',
         userId: session.user.id,
+        country: 'OTHER', // Add a default country
       },
-    })
+    });
 
     return NextResponse.json(project)
   } catch (error) {

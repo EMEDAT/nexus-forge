@@ -9,7 +9,6 @@ export const nigeriaConfig: CountryConfig = {
   code: 'NG',
   name: 'Nigeria',
   flag: '/images/nigeria-flag.svg',
-  flagAnimation: '/images/nigeria-flag-animated.svg',
   video: '/videos/nigerian-flag.mp4',
   currency: {
     code: 'NGN',

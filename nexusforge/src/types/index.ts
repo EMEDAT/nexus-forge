@@ -1,6 +1,9 @@
 // src/types/index.ts
 
-export type Country = 'NG' | 'US' | 'GB' | 'CA' // Add more as needed
+import { MentorAvailability, MentorshipPreferences } from './mentorship';
+
+
+export type Country = 'NIGERIA' | 'UNITED_STATES'
 export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'PROFESSIONAL' | 'STUDENT' | 'VETERAN' | 'CLIENT'
 export type ProjectStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED'
 export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
@@ -8,6 +11,7 @@ export type MentorshipStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
 export type RiskStatus = 'ACTIVE' | 'MITIGATED' | 'RESOLVED'
 export type DocumentType = 'PDF' | 'DOC' | 'XLSX' | 'IMAGE' | 'OTHER'
 export type Gender = 'MALE' | 'FEMALE'
+
 
 export interface User {
   id: string
@@ -22,6 +26,8 @@ export interface User {
   bio: string | null
   expertise: string[]
   experience: number | null
+  mentorshipAvailable?: MentorAvailability
+  mentorshipPreferences?: MentorshipPreferences | string  
   createdAt: Date
   updatedAt: Date
   

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma, testPrismaConnection } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+// import { Prisma } from '@prisma/client'
 
 export async function POST(req: Request) {
   console.log('Registration route started')
@@ -42,6 +42,14 @@ export async function POST(req: Request) {
       country: body.country,
       gender: body.gender // Include gender in sanitized data
     }
+
+    // Add this right after the sanitizedData declaration
+    const countryMap: Record<string, 'NIGERIA' | 'UNITED_STATES'> = {
+      'NIGERIA': 'NIGERIA',
+      'UNITED_STATES': 'UNITED_STATES'
+    };
+    
+    sanitizedData.country = countryMap[sanitizedData.country] || sanitizedData.country;
 
     console.log('Sanitized registration data:', JSON.stringify(sanitizedData, null, 2))
 
@@ -128,6 +136,11 @@ export async function POST(req: Request) {
         { status: 500 }
       )
     }
+
+    return NextResponse.json({
+      ...newUser,
+      redirectUrl: `/(roles)/${sanitizedData.role.toLowerCase()}/dashboard`
+    })
 
     // Return user data without sensitive information
     return NextResponse.json(newUser)

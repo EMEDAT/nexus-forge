@@ -8,8 +8,14 @@ interface RecentActivityProps {
 }
 
 export async function RecentActivity({ userId }: RecentActivityProps) {
-  const recentProjects: Project[] = await prisma.project.findMany({
+  const recentProjects = await prisma.project.findMany({
     where: { userId },
+    include: {
+      user: true,  // Include user to match Project type
+      documents: true,  // Include documents
+      team: true,  // Include team
+      tasks: true,  // Include tasks
+    },
     orderBy: { createdAt: 'desc' },
     take: 5,
   })
@@ -20,7 +26,7 @@ export async function RecentActivity({ userId }: RecentActivityProps) {
         <h2 className="font-semibold mb-4">Recent Activity</h2>
         <div className="space-y-4">
           {recentProjects.length > 0 ? (
-            recentProjects.map((project: Project) => (
+            recentProjects.map((project) => (
               <div
                 key={project.id}
                 className="flex items-start space-x-3"

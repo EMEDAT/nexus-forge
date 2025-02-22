@@ -2,12 +2,12 @@
 import { CountryConfig } from './types';
 import { nigeriaConfig } from './nigeria';
 // Import other country configs as they're created
-// import { usaConfig } from './usa';
+import { usConfig } from './us';
 
 // Create a map of country codes to configurations
 const countryConfigs: Record<string, CountryConfig> = {
   NG: nigeriaConfig,
-  // US: usaConfig,
+  US: usConfig,
   // Add more countries as they're created
 };
 
@@ -28,4 +28,4 @@ export function getAllCountries(): Array<{ code: string, name: string, flag: str
 // Re-export types and configurations
 export * from './types';
 export { nigeriaConfig } from './nigeria';
-// export { usaConfig } from './usa';
+export { usConfig } from './us';

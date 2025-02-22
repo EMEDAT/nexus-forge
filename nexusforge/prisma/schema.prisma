@@ -9,197 +9,272 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Enum for more structured role and country management
+enum UserRole {
+  STUDENT
+  PROFESSIONAL
+  VETERAN
+  CLIENT
+}
+
+enum Country {
+  NIGERIA
+  UNITED_STATES
+}
+
+enum MentorshipStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MentorAvailability {
+  AVAILABLE
+  UNAVAILABLE
+  LIMITED
+}
+
 model User {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  email         String       @unique
-  password      String
-  role          String      // STUDENT, PROFESSIONAL, VETERAN, CLIENT
-  gender        String     // 'MALE' or 'FEMALE'
-  country       String
-  profileImage  String?
-  bio           String?   
-  expertise     String[]    @default([])
-  experience    Int?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole
+  gender   String // 'MALE' or 'FEMALE'
+  country  Country
+  state    String? // Specific to country
+
+  // Profile Details
+  profileImage String?
+  bio          String?
+  expertise    String[] @default([])
+  experience   Int?
+
+  // Country and Role Specific Fields
+  professionalLicense    String?
+  educationalInstitution String?
+  graduationYear         Int?
+
+  // Mentorship Specific
+  mentorshipAvailable   MentorAvailability @default(UNAVAILABLE)
+  mentorshipPreferences Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  projects              Project[]
-  messages             Message[]
-  mentorshipsAsMentor  Mentorship[]  @relation("MentorRelation")
-  mentorshipsAsMentee  Mentorship[]  @relation("MenteeRelation")
-  activities           Activity[]
-  teamMemberships      TeamMember[]
-  assignedTasks        Task[]
+  projects            Project[]
+  messages            Message[]
+  mentorshipsAsMentor Mentorship[] @relation("MentorRelation")
+  mentorshipsAsMentee Mentorship[] @relation("MenteeRelation")
+
+  // Fixed relation fields for MentorshipRequest
+  sentMentorshipRequests     MentorshipRequest[] @relation("MenteeRequests")
+  receivedMentorshipRequests MentorshipRequest[] @relation("MentorRequests")
+
+  activities      Activity[]
+  teamMemberships TeamMember[]
+  assignedTasks   Task[]
 
   // Risk-related relations
-  createdRisks     Risk[]   @relation("RiskCreation")
-  assignedRisks    Risk[]   @relation("RiskAssignment")
-  riskAlerts       RiskAlert[]
+  createdRisks       Risk[]        @relation("RiskCreation")
+  assignedRisks      Risk[]        @relation("RiskAssignment")
+  riskAlerts         RiskAlert[]
   riskHistoryUpdates RiskHistory[]
 }
 
-model Project {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String    
-  status        String      // DRAFT, IN_PROGRESS, COMPLETED
-  budget        Float?
-  timeline      DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
-  // Nigeria-specific fields
-  state         String?     // Nigerian state
-  lga           String?     // Local Government Area
-  buildingType  String?     // RESIDENTIAL, COMMERCIAL, INSTITUTIONAL
-  landUseZone   String?     // RESIDENTIAL, COMMERCIAL, INDUSTRIAL, MIXED_USE
-  regulatoryApprovals String[] // Array of required approvals
-  
+model MentorshipRequest {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId // Fixed the ID field
+  menteeId  String   @db.ObjectId
+  mentorId  String   @db.ObjectId
+  status    String   @default("PENDING")
+  message   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Fixed relations with proper names that match the User model
+  mentee User @relation("MenteeRequests", fields: [menteeId], references: [id])
+  mentor User @relation("MentorRequests", fields: [mentorId], references: [id])
+}
+
+model Mentorship {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Relationship Details
+  status      MentorshipStatus @default(ACTIVE)
+  startDate   DateTime?
+  nextSession DateTime?
+
+  // Country-Specific Mentorship Tracking
+  sessionNotes Json?
+
   // Relations
-  userId        String      @db.ObjectId
-  user          User        @relation(fields: [userId], references: [id])
-  documents     Document[]
-  team          TeamMember[]
-  tasks         Task[]
-  risks         Risk[]
-  riskAlerts    RiskAlert[]
+  mentorId String @db.ObjectId
+  mentor   User   @relation("MentorRelation", fields: [mentorId], references: [id])
+
+  menteeId String @db.ObjectId
+  mentee   User   @relation("MenteeRelation", fields: [menteeId], references: [id])
+
+  // Tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  status      String // DRAFT, IN_PROGRESS, COMPLETED
+
+  // Country-Specific Project Details
+  country Country
+  state   String? // Specific to country
+
+  // Detailed Country-Specific Fields
+  buildingType        String?
+  landUseZone         String?
+  regulatoryApprovals String[]
+
+  // Financial Details
+  budget     Float?
+  actualCost Float?
+  currency   String?
+
+  // Timing
+  timeline  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  userId     String       @db.ObjectId
+  user       User         @relation(fields: [userId], references: [id])
+  documents  Document[]
+  team       TeamMember[]
+  tasks      Task[]
+  risks      Risk[]
+  riskAlerts RiskAlert[]
 }
 
 model Risk {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  status        String    // ACTIVE, MITIGATED, RESOLVED
-  severity      Int       // 1-5 scale
-  probability   Int       // 1-5 scale
-  mitigation    String?
-  category      String?
-  
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  status      String // ACTIVE, MITIGATED, RESOLVED
+  severity    Int // 1-5 scale
+  probability Int // 1-5 scale
+  mitigation  String?
+  category    String?
+
   // Relations
-  projectId     String    @db.ObjectId
-  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  createdById   String    @db.ObjectId
-  createdBy     User      @relation("RiskCreation", fields: [createdById], references: [id], onDelete: Cascade)
-  
-  assignedToId  String?   @db.ObjectId
-  assignedTo    User?     @relation("RiskAssignment", fields: [assignedToId], references: [id], onDelete: SetNull)
-  
-  alerts        RiskAlert[]
-  history       RiskHistory[]
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  projectId String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdById String @db.ObjectId
+  createdBy   User   @relation("RiskCreation", fields: [createdById], references: [id], onDelete: Cascade)
+
+  assignedToId String? @db.ObjectId
+  assignedTo   User?   @relation("RiskAssignment", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  alerts  RiskAlert[]
+  history RiskHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RiskAlert {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  message     String
-  read        Boolean   @default(false)
-  
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  message String
+  read    Boolean @default(false)
+
   // Relations
-  riskId      String    @db.ObjectId
-  risk        Risk      @relation(fields: [riskId], references: [id], onDelete: Cascade)
-  
-  projectId   String    @db.ObjectId
-  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime  @default(now())
+  riskId String @db.ObjectId
+  risk   Risk   @relation(fields: [riskId], references: [id], onDelete: Cascade)
+
+  projectId String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 }
 
 model RiskHistory {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  riskId          String    @db.ObjectId
-  risk            Risk      @relation(fields: [riskId], references: [id], onDelete: Cascade)
-  
-  updatedById     String    @db.ObjectId
-  updatedBy       User      @relation(fields: [updatedById], references: [id], onDelete: Cascade)
-  
-  previousStatus  String?
-  newStatus       String
-  comment         String?
-  
-  createdAt       DateTime  @default(now())
-}
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  riskId String @db.ObjectId
+  risk   Risk   @relation(fields: [riskId], references: [id], onDelete: Cascade)
 
-// Existing models remain the same...
-model Mentorship {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  status        String    // ACTIVE, COMPLETED, CANCELLED
-  nextSession   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  mentorId      String    @db.ObjectId
-  mentor        User      @relation("MentorRelation", fields: [mentorId], references: [id])
-  menteeId      String    @db.ObjectId
-  mentee        User      @relation("MenteeRelation", fields: [menteeId], references: [id])
+  updatedById String @db.ObjectId
+  updatedBy   User   @relation(fields: [updatedById], references: [id], onDelete: Cascade)
+
+  previousStatus String?
+  newStatus      String
+  comment        String?
+
+  createdAt DateTime @default(now())
 }
 
 model Message {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  content     String    
-  createdAt   DateTime  @default(now())
-  
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+
   // Relations
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Document {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  fileUrl     String
-  size        Int
-  type        String    // PDF, DOC, XLSX, IMAGE, OTHER
-  createdAt   DateTime  @default(now())
-  
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  fileUrl   String
+  size      Int
+  type      String // PDF, DOC, XLSX, IMAGE, OTHER
+  createdAt DateTime @default(now())
+
   // Relations
-  projectId   String    @db.ObjectId
-  project     Project   @relation(fields: [projectId], references: [id])
+  projectId String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id])
 }
 
 model Activity {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  description   String
-  type          String
-  createdAt     DateTime  @default(now())
-  
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  type        String
+  createdAt   DateTime @default(now())
+
   // Relations
-  userId        String    @db.ObjectId
-  user          User      @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model TeamMember {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  role        String    // OWNER, ADMIN, MEMBER
-  createdAt   DateTime  @default(now())
-  
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  role      String // OWNER, ADMIN, MEMBER
+  createdAt DateTime @default(now())
+
   // Relations
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
-  projectId   String    @db.ObjectId
-  project     Project   @relation(fields: [projectId], references: [id])
+  userId    String  @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id])
+  projectId String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id])
 }
 
 model Task {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  status        String    // PENDING, IN_PROGRESS, COMPLETED
-  dueDate       DateTime
-  completed     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  status      String // PENDING, IN_PROGRESS, COMPLETED
+  dueDate     DateTime
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
   // Relations
-  projectId     String    @db.ObjectId
-  project       Project   @relation(fields: [projectId], references: [id])
-  assignedToId  String    @db.ObjectId
-  assignedTo    User      @relation(fields: [assignedToId], references: [id])
+  projectId    String  @db.ObjectId
+  project      Project @relation(fields: [projectId], references: [id])
+  assignedToId String  @db.ObjectId
+  assignedTo   User    @relation(fields: [assignedToId], references: [id])
 }

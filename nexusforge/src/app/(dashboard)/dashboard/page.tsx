@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { DashboardHeader } from '@/components/dashboard/dashboard-header'
 import { DashboardStats } from '@/components/dashboard/dashboard-stats'
 import { RecentActivity } from '@/components/dashboard/recent-activity'
-import { UpcomingMentorship } from '@/components/dashboard/upcoming-mentorship'
+import UpcomingMentorship from '@/components/dashboard/upcoming-mentorship';
 import { NigeriaInsights } from '@/components/dashboard/nigeria-insights'
 import Image from 'next/image'
 import { User } from '@/types'
@@ -20,13 +20,20 @@ interface ExtendedUser extends User {
   }
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { country?: string };
+}) {
   try {
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
       redirect('/login')
     }
+
+    // Prioritize query parameter, fallback to session country
+    const userCountry = searchParams.country || session.user.country;
 
     const userData = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -60,7 +67,8 @@ export default async function DashboardPage() {
       }
     }
 
-    const isNigerianUser = session.user.country === 'NG'
+    const isNigerianUser = userCountry === 'NIGERIA';
+
 
     return (
       <div className="space-y-8">
@@ -116,7 +124,10 @@ export default async function DashboardPage() {
           
           {isNigerianUser && (
             <div className="space-y-6">
-              <UpcomingMentorship userId={session.user.id} />
+            <UpcomingMentorship 
+              userId={session.user.id} 
+              userRole={session.user.role}
+            />
               
               {/* Nigerian Architecture Spotlight */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">

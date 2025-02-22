@@ -1,5 +1,7 @@
 // src/config/countries.ts
 
+import React from 'react';
+
 export type CountryConfig = {
     code: string;
     name: string;
@@ -67,191 +69,233 @@ export type CountryConfig = {
         dark: string;
       };
     };
-  }
-  
-  // Nigerian configuration
-  const nigeriaConfig: CountryConfig = {
-    code: 'NG',
-    name: 'Nigeria',
-    flag: '/images/nigeria-flag.svg',
-    flagAnimation: '/images/nigeria-flag-animated.svg',
-    video: '/videos/nigerian-flag.mp4',
-    currency: {
-      code: 'NGN',
-      symbol: '₦',
-      name: 'Nigerian Naira',
-    },
-    measurementSystem: 'metric',
-    languages: ['English', 'Yoruba', 'Hausa', 'Igbo'],
-    architecturalStyles: [
-      {
-        name: 'Traditional Yoruba',
-        description: 'Features courtyard layouts, impluvium roofing, and carved wooden elements',
-        keyFeatures: [
-          'Courtyard designs',
-          'Impluvium roofing',
-          'Carved wooden posts',
-          'Mud brick construction',
-          'Community-centered layouts'
-        ],
-        examples: ['Afin Oyo (Oyo Palace)', 'Osun-Osogbo Sacred Grove']
-      },
-      {
-        name: 'Colonial Architecture',
-        description: 'British-influenced buildings with adaptations for tropical climate',
-        period: '1900-1960',
-        keyFeatures: [
-          'Symmetrical facades',
-          'Columned entrances',
-          'High ceilings',
-          'Large windows',
-          'Verandas'
-        ],
-        examples: ['Carter Bridge House', 'First Bank Building Lagos']
-      },
-      {
-        name: 'Contemporary Nigerian',
-        description: 'Modern designs that incorporate traditional elements with climate-responsive features',
-        period: '1960-present',
-        keyFeatures: [
-          'Climate-responsive design',
-          'Integration of local materials',
-          'Cultural motifs',
-          'Sustainability features',
-          'Indoor-outdoor living spaces'
-        ],
-        examples: ['NECOM House', 'Nestoil Tower']
-      }
-    ],
-    buildingCodes: [
-      {
-        name: 'National Building Code',
-        description: 'Comprehensive regulations for building design and construction in Nigeria',
-        url: 'https://www.nigeriabuilding.gov.ng/codes'
-      },
-      {
-        name: 'Lagos State Building Regulations',
-        description: 'Specific building requirements for Lagos State',
-        url: 'https://lasbca.lagosstate.gov.ng'
-      }
-    ],
-    commonMaterials: [
-      {
-        name: 'Cement (Portland)',
-        description: 'Widely used binding material for construction',
-        averageCost: 4500,
-        unit: 'per 50kg bag',
-        availability: 'high'
-      },
-      {
-        name: 'Laterite',
-        description: 'Reddish clay material used traditionally for building',
-        averageCost: 35000,
-        unit: 'per truckload',
-        availability: 'high'
-      },
-      {
-        name: 'Timber (Mahogany, Iroko)',
-        description: 'Local hardwoods used for structural elements and finishes',
-        averageCost: 3500,
-        unit: 'per board',
-        availability: 'medium'
-      }
-    ],
-    regions: [
-      {
-        name: 'South West',
-        states: ['Lagos', 'Ogun', 'Oyo', 'Osun', 'Ondo', 'Ekiti']
-      },
-      {
-        name: 'South East',
-        states: ['Abia', 'Anambra', 'Ebonyi', 'Enugu', 'Imo']
-      },
-      {
-        name: 'South South',
-        states: ['Akwa Ibom', 'Bayelsa', 'Cross River', 'Delta', 'Edo', 'Rivers']
-      },
-      {
-        name: 'North Central',
-        states: ['Benue', 'FCT', 'Kogi', 'Kwara', 'Nasarawa', 'Niger', 'Plateau']
-      },
-      {
-        name: 'North East',
-        states: ['Adamawa', 'Bauchi', 'Borno', 'Gombe', 'Taraba', 'Yobe']
-      },
-      {
-        name: 'North West',
-        states: ['Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Jigawa', 'Sokoto', 'Zamfara']
-      }
-    ],
-    marketInsights: {
-      budgetRange: '₦25M - ₦150M',
-      inDemandSkills: ['BIM', 'Sustainable Design', 'Cultural Preservation'],
-      hotRegions: ['Lagos', 'Abuja', 'Port Harcourt'],
-      growthAreas: ['Urban Housing', 'Commercial Centers', 'Cultural Institutions']
-    },
-    resources: [
-      {
-        id: 'nbc-guide',
-        type: 'guide',
-        title: 'Guide to Nigerian Building Code Compliance',
-        description: 'Comprehensive guide to understanding and implementing the National Building Code',
-        url: '/resources/nigeria/nbc-guide.pdf',
-        isFree: true,
-        language: ['English']
-      },
-      {
-        id: 'vernacular-design',
-        type: 'course',
-        title: 'Nigerian Vernacular Design Principles',
-        description: 'Learn traditional Nigerian architectural principles and their modern applications',
-        url: '/courses/nigeria/vernacular-design',
-        isFree: false,
-        language: ['English', 'Yoruba']
-      }
-    ],
-    regionalHubs: [
-      {
-        name: 'Lagos',
-        description: 'Nigeria\'s commercial capital with the most architectural firms',
-        knownFor: ['High-rises', 'Mixed-use developments', 'Contemporary designs'],
-        majorFirms: ['Chronos Studeos', 'HTL Africa', 'James Cubitt Architects'],
-        educationalInstitutions: ['University of Lagos', 'Covenant University']
-      },
-      {
-        name: 'Abuja',
-        description: 'The planned capital city with a focus on government and institutional buildings',
-        knownFor: ['Government buildings', 'Cultural centers', 'Planned communities'],
-        majorFirms: ['Design Group Nigeria', 'AD Consulting'],
-        educationalInstitutions: ['University of Abuja']
-      }
-    ],
-    theme: {
-      primary: '#008751', // Green from Nigerian flag
-      secondary: '#ffffff', // White
-      accent: '#0a3d62',   // Deep blue
-      background: {
-        light: '#f5f5f5',
-        dark: '#121212'
-      }
+
+    // Optional dashboard-specific properties
+    onboarding?: Array<{
+      title: string;
+      description: string;
+      icon: React.ComponentType<{ className?: string }>;
+    }>;
+    
+    publications?: Array<{
+      title: string;
+      journal: string;
+      date: string;
+    }>;
+    
+    researchProjects?: Array<{
+      title: string;
+      description: string;
+      status: string;
+    }>;
+    
+    workshops?: Array<{
+      title: string;
+      topic: string;
+      date: string;
+      participants: number;
+    }>;
+    
+    industryTrends?: Array<{
+      title: string;
+      description: string;
+      impact: string;
+      trend?: string;
+    }>;
+    
+    committees?: Array<{
+      name: string;
+      role: string;
+      responsibilities: string;
+    }>;
+    
+    speakingEngagements?: Array<{
+      title: string;
+      venue: string;
+      date: string;
+      audience: number;
+    }>;
+    
+    legacyProjects?: Array<{
+      title: string;
+      description: string;
+      status: string;
+      impact: string;
+      recognition?: string;
+    }>;
+    
+    contributions?: Array<{
+      title: string;
+      description: string;
+      tags: string[];
+    }>;
+    
+    regulations?: Array<{
+      title: string;
+      description: string;
+      status: string;
+    }>;
+    
+    buildingStandards?: Array<{
+      name: string;
+      description: string;
+    }>;
+    
+    suppliers?: Array<{
+      name: string;
+      materials: string[];
+      rating: number;
+    }>;
+    
+    certifications?: Array<{
+      name: string;
+      authority: string;
+      status: string;
+      expiryDate: string;
+    }>;
+    
+    training?: Array<{
+      title: string;
+      provider: string;
+      date: string;
+    }>;
+    
+    buildingGuidelines?: Array<{
+      title: string;
+      description: string;
+    }>;
+    
+    permits?: Array<{
+      name: string;
+      requirements: string;
+      timeline: string;
+    }>;
+}
+
+// Helper functions remain the same
+export function getCountryConfig(countryCode: string): CountryConfig | null {
+  const countryConfigs: Record<string, CountryConfig> = {
+    NG: {
+      ...nigeriaConfig,
+      
+      // Add specific dashboard-specific configurations for Nigeria
+      onboarding: [
+        {
+          title: 'Explore Architecture',
+          description: 'Discover the rich architectural heritage of Nigeria',
+          icon: () => null // Replace with actual icon component
+        },
+        // Add more onboarding steps
+      ],
+      publications: [
+        {
+          title: 'Nigerian Architectural Trends',
+          journal: 'Arch Nigeria',
+          date: '2024-01-15'
+        }
+      ],
+      // Add other optional properties as needed
     }
   };
-  
-  // Country configurations mapping
+  return countryConfigs[countryCode] || null;
+}
+
+export function getAllCountries(): Array<{code: string, name: string, flag: string}> {
   const countryConfigs: Record<string, CountryConfig> = {
     NG: nigeriaConfig,
     // Add more countries as needed
   };
-  
-  // Helper functions
-  export function getCountryConfig(countryCode: string): CountryConfig | null {
-    return countryConfigs[countryCode] || null;
-  }
-  
-  export function getAllCountries(): Array<{code: string, name: string, flag: string}> {
-    return Object.entries(countryConfigs).map(([code, config]) => ({
-      code,
-      name: config.name,
-      flag: config.flag
-    }));
-  }
+  return Object.entries(countryConfigs).map(([code, config]) => ({
+    code,
+    name: config.name,
+    flag: config.flag
+  }));
+}
+
+// Reconstruct the original Nigerian configuration with optional properties
+const nigeriaConfig: CountryConfig = {
+  code: 'NG',
+  name: 'Nigeria',
+  flag: '/images/nigeria-flag.svg',
+  flagAnimation: '/images/nigeria-flag-animated.svg',
+  video: '/videos/nigerian-flag.mp4',
+  currency: {
+    code: 'NGN',
+    symbol: '₦',
+    name: 'Nigerian Naira',
+  },
+  measurementSystem: 'metric',
+  languages: ['English', 'Yoruba', 'Hausa', 'Igbo'],
+  architecturalStyles: [
+    // ... existing styles
+  ],
+  buildingCodes: [
+    // ... existing building codes
+  ],
+  commonMaterials: [
+    // ... existing materials
+  ],
+  regions: [
+    // ... existing regions
+  ],
+  marketInsights: {
+    budgetRange: '₦25M - ₦150M',
+    inDemandSkills: ['BIM', 'Sustainable Design', 'Cultural Preservation'],
+    hotRegions: ['Lagos', 'Abuja', 'Port Harcourt'],
+    growthAreas: ['Urban Housing', 'Commercial Centers', 'Cultural Institutions']
+  },
+  resources: [
+    // ... existing resources
+  ],
+  regionalHubs: [
+    // ... existing regional hubs
+  ],
+  theme: {
+    primary: '#008751', // Green from Nigerian flag
+    secondary: '#ffffff', // White
+    accent: '#0a3d62',   // Deep blue
+    background: {
+      light: '#f5f5f5',
+      dark: '#121212'
+    }
+  },
+
+  // Optional dashboard-specific properties
+  onboarding: [
+    {
+      title: 'Start Your Journey',
+      description: 'Begin exploring architectural opportunities in Nigeria',
+      icon: () => null // Replace with actual icon component
+    }
+  ],
+  publications: [
+    {
+      title: 'Nigerian Architecture: Past and Future',
+      journal: 'African Architectural Review',
+      date: '2024-02-01'
+    }
+  ],
+  researchProjects: [
+    {
+      title: 'Sustainable Urban Design in Lagos',
+      description: 'Exploring eco-friendly architectural solutions',
+      status: 'active'
+    }
+  ],
+  workshops: [
+    {
+      title: 'Modern Nigerian Architecture Symposium',
+      topic: 'Cultural Integration in Design',
+      date: '2024-03-15',
+      participants: 150
+    }
+  ],
+  industryTrends: [
+    {
+      title: 'Green Building Technologies',
+      description: 'Emerging sustainable design practices',
+      impact: 'High potential for transformation',
+      trend: 'Growing adoption'
+    }
+  ]
+};

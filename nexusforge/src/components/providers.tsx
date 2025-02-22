@@ -3,6 +3,10 @@
 
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "next-themes"
+import { MentorshipProvider } from './mentorship-context';
+import { RoleProvider } from './role-context';
+import { CountryProvider } from './country-context'; 
+import { ExperienceProvider } from './experience-context';
 import { useEffect, useState } from "react"
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -34,7 +38,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem={false}
         disableTransitionOnChange
       >
-        {children}
+        <RoleProvider>
+          <CountryProvider>
+            <ExperienceProvider>
+              <MentorshipProvider>
+                {children}
+              </MentorshipProvider>
+            </ExperienceProvider>
+          </CountryProvider>
+        </RoleProvider>
       </ThemeProvider>
     </SessionProvider>
   )
