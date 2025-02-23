@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# videos
-nexusforge/public/videos/
+# # videos
+# nexusforge/public/videos/
